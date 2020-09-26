@@ -26,3 +26,12 @@ public:
 private:
 	float val[4];
 };
+
+class Matrix4f
+{
+public:
+	Matrix4f();
+
+private:
+	float val[4][4];
+};
