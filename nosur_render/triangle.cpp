@@ -2,9 +2,9 @@
 
 #include "triangle.h"
 
-void triangle::setVertex(int index, Vector3f ver) { pos[index] = ver; }
+void triangle::setVertex(int index, Mymath::Vector3f ver) { pos[index] = ver; }
 
-void triangle::setNormal(int index, Vector3f n) { normal[index] = n; }
+void triangle::setNormal(int index, Mymath::Vector3f n) { normal[index] = n; }
 
 void triangle::setColor(int index, float r, float g, float b)
 {
@@ -13,6 +13,6 @@ void triangle::setColor(int index, float r, float g, float b)
         throw std::runtime_error("Invalid color values");
     }
 
-    color[index] = Vector3f((float)r / 255., (float)g / 255., (float)b / 255.);
+    color[index] = Mymath::Vector3f((float)r / 255., (float)g / 255., (float)b / 255.);
     return;
 }

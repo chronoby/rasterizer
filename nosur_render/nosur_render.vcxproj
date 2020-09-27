@@ -141,12 +141,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="rasterizer.cpp" />
+    <ClCompile Include="RWindow.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="triangle.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rasterizer.h" />
+    <ClInclude Include="RWindow.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="pipeline.h" />
