@@ -2,8 +2,8 @@
 
 rst::rasterizer::rasterizer(int w, int h)
 {
-	frame_buff.resize(width * w);
-	z_buff.resize(width * h);
+	frame_buff.resize(w * h);
+	z_buff.resize(w * h);
 	width = w;
 	height = h;
 }

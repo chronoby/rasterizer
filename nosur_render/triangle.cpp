@@ -9,7 +9,8 @@ void triangle::setNormal(int index, Mymath::Vector3f n) { normal[index] = n; }
 void triangle::setColor(int index, float r, float g, float b)
 {
     if ((r < 0.0) || (r > 255.) || (g < 0.0) || (g > 255.) || (b < 0.0) ||
-        (b > 255.)) {
+        (b > 255.)) 
+    {
         throw std::runtime_error("Invalid color values");
     }
 

@@ -4,7 +4,8 @@
 #include <algorithm>
 #include "triangle.h"
 
-namespace rst {
+namespace rst 
+{
 	class rasterizer
 	{
 	public:
@@ -19,6 +20,8 @@ namespace rst {
 		inline void set_projection(const Mymath::Matrix4f& p) { projection = p; }
 
 		void set_pixel(const Mymath::Vector3f& point, const Mymath::Vector3f& color);
+		void clear();
+        void draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf_id col_buffer, Primitive type);
 		
 
 	private:
@@ -31,5 +34,8 @@ namespace rst {
 		int width, height;
 		std::vector<Mymath::Vector3f> frame_buff;
 		std::vector<float> z_buff;
+
+		int next_id = 0;
+		inline int get_next_id() { return next_id++; }
 	};
 }
