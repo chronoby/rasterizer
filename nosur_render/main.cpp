@@ -4,6 +4,7 @@
 #include "util.h"
 #include "pipeline.h"
 #include "RWindow.h"
+#include "transform.h"
 
 
 int main(int argc, char* argv[])
@@ -14,7 +15,7 @@ int main(int argc, char* argv[])
     rst::rasterizer r(700, 700);
 
     Mymath::Vector3f eye_pos = { 0,0,5 };
-
+    float angle = 0;
 
     std::vector<Mymath::Vector3f> pos
     {
@@ -42,11 +43,11 @@ int main(int argc, char* argv[])
             {185.0, 217.0, 238.0}
     };
 
-    r.load_positions(pos);
-    r.load_indices(ind);
-    r.load_colors(cols);
+    auto pos_id = r.load_positions(pos);
+    auto ind_id = r.load_indices(ind);
+    auto col_id = r.load_colors(cols);
 
-    r.clear(rst::Buffers::Color | rst::Buffers::Depth);
+    r.clear();
 
     r.set_model(get_model_matrix(angle));
     r.set_view(get_view_matrix(eye_pos));

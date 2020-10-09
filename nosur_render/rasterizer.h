@@ -1,19 +1,41 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <algorithm>
 #include "triangle.h"
 
 namespace rst 
 {
+	struct pos_buf_id
+	{
+		int pos_id = 0;
+	};
+
+	struct ind_buf_id
+	{
+		int ind_id = 0;
+	};
+
+	struct col_buf_id
+	{
+		int col_id = 0;
+	};
+
+	enum class Primitive
+	{
+		Line,
+		Triangle
+	};
+
 	class rasterizer
 	{
 	public:
 		rasterizer(int w, int h);
 
-		void load_positions(const std::vector<Mymath::Vector3f>& positions);
-		void load_indices(const std::vector<Mymath::Vector3i>& indices);
-		void load_colors(const std::vector<Mymath::Vector3f>& colors);
+		pos_buf_id load_positions(const std::vector<Mymath::Vector3f>& positions);
+		ind_buf_id load_indices(const std::vector<Mymath::Vector3i>& indices);
+		col_buf_id load_colors(const std::vector<Mymath::Vector3f>& colors);
 
 		inline void set_model(const Mymath::Matrix4f& m) { model = m; }
 		inline void set_view(const Mymath::Matrix4f& v) { view = v; }
@@ -30,6 +52,10 @@ namespace rst
 		Mymath::Matrix4f model;
 		Mymath::Matrix4f view;
 		Mymath::Matrix4f projection;
+
+		std::map<int, std::vector<Mymath::Vector3f>> pos_buf;
+		std::map<int, std::vector<Mymath::Vector3i>> ind_buf;
+		std::map<int, std::vector<Mymath::Vector3f>> col_buf;
 
 		int width, height;
 		std::vector<Mymath::Vector3f> frame_buff;
