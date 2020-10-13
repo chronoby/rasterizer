@@ -1,4 +1,6 @@
 #include <stdexcept>
+#include <array>
+#include <algorithm>
 
 #include "triangle.h"
 
@@ -16,4 +18,11 @@ void triangle::setColor(int index, float r, float g, float b)
 
     color[index] = Mymath::Vector3f((float)r / 255., (float)g / 255., (float)b / 255.);
     return;
+}
+
+std::vector<Mymath::Vector4f> triangle::toVector4() const
+{
+    std::vector<Mymath::Vector4f> res;
+    std::transform(std::begin(pos), std::end(pos), res.begin(), [](auto& vec) {return Mymath::Vector4f(vec.x(), vec.y(), vec.z(), 1.0f); });
+    return res;
 }

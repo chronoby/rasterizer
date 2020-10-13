@@ -9,9 +9,6 @@
 
 int main(int argc, char* argv[])
 {
-    HINSTANCE hIns = ::GetModuleHandle(0);
-    RWindow RWin(hIns);
-
     rst::rasterizer r(700, 700);
 
     Mymath::Vector3f eye_pos = { 0,0,5 };
@@ -47,13 +44,16 @@ int main(int argc, char* argv[])
     auto ind_id = r.load_indices(ind);
     auto col_id = r.load_colors(cols);
 
-    r.clear();
+    //r.clear();
 
     r.set_model(get_model_matrix(angle));
     r.set_view(get_view_matrix(eye_pos));
     r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
 
     r.draw(pos_id, ind_id, col_id, rst::Primitive::Triangle);
+
+    HINSTANCE hIns = ::GetModuleHandle(0);
+    RWindow RWin(hIns);
 
     if (RWin.InitApplication() == FALSE)
         return FALSE;

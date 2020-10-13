@@ -15,6 +15,11 @@ namespace Mymath
 		Vector3i& operator=(Vector3i temp);
 		int& operator[](std::size_t n) { return val[n]; }
 		const int& operator[](std::size_t n) const { return val[n]; }
+
+		inline int x() const { return val[0]; }
+		inline int y() const { return val[1]; }
+		inline int z() const { return val[2]; }
+
 	private:
 		std::vector<int> val;
 	};
@@ -24,10 +29,14 @@ namespace Mymath
 	public:
 		Vector3f() :val(3, 0.0f) { }
 		Vector3f(float a, float b, float c) { val.resize(3); val[0] = a; val[1] = b; val[2] = c; }
+
 		Vector3f& operator=(Vector3f temp);
 		float& operator[](std::size_t n) { return val[n]; }
 		const float& operator[](std::size_t n) const { return val[n]; }
-
+		const Vector3f& operator*(const float temp) const;
+		inline float x() const { return val[0]; }
+		inline float y() const { return val[1]; }
+		inline float z() const { return val[2]; }
 	private:
 		std::vector<float> val;
 	};
@@ -37,9 +46,18 @@ namespace Mymath
 	public:
 		Vector4f() :val(4, 0.0f) { }
 		Vector4f(float a, float b, float c, float d) { val.resize(4); val[0] = a; val[1] = b; val[2] = c; val[3] = d; }
+
 		float& operator[](std::size_t n) { return val[n]; }
 		const float& operator[](std::size_t n) const { return val[n]; }
 		Vector4f& operator=(Vector4f temp);
+		const Vector4f operator/(const float temp);
+		Vector3f head3() { return Vector3f(val[0], val[1], val[2]); }
+
+		inline float x() const { return val[0]; }
+		inline float y() const { return val[1]; }
+		inline float z() const { return val[2]; }
+		inline float w() const { return val[3]; }
+		
 	private:
 		std::vector<float> val;
 	};
@@ -47,11 +65,12 @@ namespace Mymath
 	class Matrix4f
 	{
 	public:
-		Matrix4f() :val(16, 0.0f) { };
+		Matrix4f(): val(16, 0.0f) { }
 		Matrix4f(float v[]);
-		std::vector<float>& operator[](std::size_t n);
-		const std::vector<float>& operator[](std::size_t n) const;
+		std::vector<float> operator[](std::size_t n);
+		const std::vector<float> operator[](std::size_t n) const;
 		friend Matrix4f operator*(const Matrix4f& lhs, const Matrix4f& rhs);
+		Vector4f operator*(const Vector4f& rhs);
 	private:
 		std::vector<float> val;
 	};

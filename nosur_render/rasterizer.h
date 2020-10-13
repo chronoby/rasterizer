@@ -31,7 +31,9 @@ namespace rst
 	class rasterizer
 	{
 	public:
+		rasterizer() {  }
 		rasterizer(int w, int h);
+		rasterizer(rasterizer& r) = default;
 
 		pos_buf_id load_positions(const std::vector<Mymath::Vector3f>& positions);
 		ind_buf_id load_indices(const std::vector<Mymath::Vector3i>& indices);
@@ -41,13 +43,13 @@ namespace rst
 		inline void set_view(const Mymath::Matrix4f& v) { view = v; }
 		inline void set_projection(const Mymath::Matrix4f& p) { projection = p; }
 
-		void set_pixel(const Mymath::Vector3f& point, const Mymath::Vector3f& color);
+		void set_pixel(const Mymath::Vector3i& point, const Mymath::Vector3f& color);
 		void clear();
         void draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf_id col_buffer, Primitive type);
 		
 
 	private:
-		void draw_line(Mymath::Vector3f begin, Mymath::Vector3f end);
+		void rasterize_triangle(const triangle& t);
 
 		Mymath::Matrix4f model;
 		Mymath::Matrix4f view;
@@ -63,5 +65,6 @@ namespace rst
 
 		int next_id = 0;
 		inline int get_next_id() { return next_id++; }
+		inline int get_index(int x, int y){ return (height - 1 - y) * width + x; }
 	};
 }
