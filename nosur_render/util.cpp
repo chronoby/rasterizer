@@ -14,12 +14,19 @@ Mymath::Vector3f& Mymath::Vector3f::operator=(Mymath::Vector3f temp)
 	return *this;
 }
 
-const Mymath::Vector3f& Mymath::Vector3f::operator*(const float temp) const
+const Mymath::Vector3f Mymath::Vector3f::operator*(const float temp) const
 {
 	Vector3f res;
 	for (int i = 0; i < 3; ++i)
 		res[i] = val[i] * temp;
 	return res;
+}
+
+Mymath::Vector3c& Mymath::Vector3c::operator=(Mymath::Vector3c temp)
+{
+	for (int i = 0; i < 3; ++i)
+		val[i] = temp[i];
+	return *this;
 }
 
 Mymath::Vector4f& Mymath::Vector4f::operator=(Vector4f temp)

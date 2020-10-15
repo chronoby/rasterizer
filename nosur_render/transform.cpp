@@ -10,12 +10,14 @@ Mymath::Matrix4f get_view_matrix(Mymath::Vector3f eye_pos)
 
 Mymath::Matrix4f get_model_matrix(float rotation_angle)
 {
-    float rotation_radian = rotation_angle * MY_PI / 180;
+    /*float rotation_radian = rotation_angle * MY_PI / 180;
 
     float temp[16] = { cos(rotation_radian), -sin(rotation_radian), 0, 0,
         sin(rotation_radian), cos(rotation_radian), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1 };
+    Mymath::Matrix4f model(temp);*/
+    float temp[16] = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
     Mymath::Matrix4f model(temp);
     return model;
 }

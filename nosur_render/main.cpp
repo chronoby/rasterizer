@@ -30,30 +30,30 @@ int main(int argc, char* argv[])
             {3, 4, 5}
     };
 
-    std::vector<Mymath::Vector3f> cols
+    std::vector<Mymath::Vector3c> cols
     {
-            {217.0, 238.0, 185.0},
-            {217.0, 238.0, 185.0},
-            {217.0, 238.0, 185.0},
-            {185.0, 217.0, 238.0},
-            {185.0, 217.0, 238.0},
-            {185.0, 217.0, 238.0}
+            {217, 238, 185},
+            {217, 238, 185},
+            {217, 238, 185},
+            {185, 217, 238},
+            {185, 217, 238},
+            {185, 217, 238}
     };
 
     auto pos_id = r.load_positions(pos);
     auto ind_id = r.load_indices(ind);
     auto col_id = r.load_colors(cols);
 
-    //r.clear();
+    r.clear();
 
     r.set_model(get_model_matrix(angle));
     r.set_view(get_view_matrix(eye_pos));
-    r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
+    r.set_projection(get_projection_matrix(45.f, 1.f, 0.1f, 50.f));
 
     r.draw(pos_id, ind_id, col_id, rst::Primitive::Triangle);
 
     HINSTANCE hIns = ::GetModuleHandle(0);
-    RWindow RWin(hIns);
+    RWindow RWin(hIns, r);
 
     if (RWin.InitApplication() == FALSE)
         return FALSE;

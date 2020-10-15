@@ -1,5 +1,9 @@
 #include "RWindow.h"
 
+rst::rasterizer RWindow::r;
+const int RWindow::w;
+const int RWindow::h;
+
 BOOL RWindow::InitApplication()
 {
     WNDCLASSEX wc;
@@ -45,6 +49,20 @@ LRESULT CALLBACK RWindow::__WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 {
     PAINTSTRUCT ps;
     HDC hdc;
+    std::vector<Mymath::Vector3c> frame;
+
+    BITMAPINFO info;
+    ZeroMemory(&info, sizeof(BITMAPINFO));
+    info.bmiHeader.biBitCount = 24;
+    info.bmiHeader.biWidth = w;
+    info.bmiHeader.biHeight = h;
+    info.bmiHeader.biPlanes = 1;
+    info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    info.bmiHeader.biSizeImage = 0;
+    info.bmiHeader.biCompression = BI_RGB;
+
+    unsigned char* buff = r.buff;
+
 
     switch (msg)
     {
@@ -54,7 +72,14 @@ LRESULT CALLBACK RWindow::__WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
-        SetPixel(hdc, 400, 300, RGB(255, 0, 0));
+//        for(int j = 0; j < 700; ++j)
+//            for (int i = 0; i < 700; ++i)
+//            {
+//                int index = j * 700 + i;
+//                SetPixel(hdc, i, j, RGB(frame[index][0], frame[index][1], frame[index][2]));
+//            }
+        frame = r.frame_buffer();
+        SetDIBitsToDevice(hdc, 0, 0, w, h, 0, 0, 0, h, buff, &info, DIB_RGB_COLORS);
         EndPaint(hWnd, &ps);
         break;
 

@@ -4,12 +4,10 @@
 
 #include "rasterizer.h"
 
-rst::rasterizer::rasterizer(int w, int h)
+rst::rasterizer::rasterizer(int w, int h): width(w), height(h)
 {
 	frame_buff.resize(w * h);
 	z_buff.resize(w * h);
-	width = w;
-	height = h;
 }
 
 rst::pos_buf_id rst::rasterizer::load_positions(const std::vector<Mymath::Vector3f>& positions)
@@ -26,7 +24,7 @@ rst::ind_buf_id rst::rasterizer::load_indices(const std::vector<Mymath::Vector3i
 	return { id };
 }
 
-rst::col_buf_id rst::rasterizer::load_colors(const std::vector<Mymath::Vector3f>& colors)
+rst::col_buf_id rst::rasterizer::load_colors(const std::vector<Mymath::Vector3c>& colors)
 {
 	auto id = get_next_id();
 	col_buf.emplace(id, colors);
@@ -63,10 +61,10 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
 {
 	std::vector<Mymath::Vector3f>& buf = pos_buf[pos_buffer.pos_id];
 	std::vector<Mymath::Vector3i>& ind = ind_buf[ind_buffer.ind_id];
-	std::vector<Mymath::Vector3f>& col = col_buf[col_buffer.col_id];
+	std::vector<Mymath::Vector3c>& col = col_buf[col_buffer.col_id];
 	
-	float f1 = (50 - 0.1) / 2.0;
-	float f2 = (50 + 0.1) / 2.0;
+	float f1 = (50.f - 0.1f) / 2.0f;
+	float f2 = (50.f + 0.1f) / 2.0f;
 
 	Mymath::Matrix4f mvp = projection * view * model;
 	for (auto& i : ind)
@@ -84,8 +82,8 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
 		// Viewport transformation
 		for (auto& vert : v)
 		{
-			vert[0] = 0.5 * width * (vert[0] + 1.0);
-			vert[1] = 0.5 * height * (vert[1] + 1.0);
+			vert[0] = 0.5f * width * (vert[0] + 1.0);
+			vert[1] = 0.5f * height * (vert[1] + 1.0);
 			vert[2] = vert[2] * f1 + f2;
 		}
 		for (int i = 0; i < 3; ++i)
@@ -107,38 +105,56 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
 	}
 }
 
-void rst::rasterizer::set_pixel(const Mymath::Vector3i& point, const Mymath::Vector3f& color)
+void rst::rasterizer::set_frame(const Mymath::Vector3i& point, const Mymath::Vector3c& color)
 {
 	int index = get_index(point.x(), point.y());
 	frame_buff[index] = color;
 }
 
+void rst::rasterizer::clear()
+{
+	std::fill(frame_buff.begin(), frame_buff.end(), Mymath::Vector3c{ 0, 0, 0 });
+
+	std::fill(z_buff.begin(), z_buff.end(), std::numeric_limits<float>::infinity());
+}
+
 void rst::rasterizer::rasterize_triangle(const triangle& t)
 {
-	auto v = t.toVector4();
+	std::vector<Mymath::Vector4f> v = t.toVector4();
 
-	int bounding_l = floor(std::min(t.pos[0].x(), std::min(t.pos[1].x(), t.pos[2].x())));
-	int bounding_r = ceil(std::max(t.pos[0].x(), std::max(t.pos[1].x(), t.pos[2].x())));
-	int bounding_u = ceil(std::max(t.pos[0].y(), std::max(t.pos[1].y(), t.pos[2].y())));
-	int bounding_d = floor(std::max(t.pos[0].y(), std::max(t.pos[1].y(), t.pos[2].y())));
+	int bounding_l = (int)floor(std::min(t.pos[0].x(), std::min(t.pos[1].x(), t.pos[2].x())));
+	int bounding_r = (int)ceil(std::max(t.pos[0].x(), std::max(t.pos[1].x(), t.pos[2].x())));
+	int bounding_u = (int)ceil(std::max(t.pos[0].y(), std::max(t.pos[1].y(), t.pos[2].y())));
+	int bounding_d = (int)floor(std::min(t.pos[0].y(), std::min(t.pos[1].y(), t.pos[2].y())));
 
 	for (int i = bounding_l; i <= bounding_r; ++i)
 	{
 		for (int j = bounding_d; j <= bounding_u; ++j)
 		{
-			auto Barycentric = computeBarycentric2D(i, j, t.pos);
-			float alpha = std::get<0>(Barycentric);
-			float beta = std::get<1>(Barycentric);
-			float gamma = std::get<2>(Barycentric);
-			float w_reciprocal = 1.0 / (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
-			float z_interpolated = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
-			z_interpolated *= w_reciprocal;
+			if (insideTriangle(i, j, t.pos))
+			{
+				auto Barycentric = computeBarycentric2D((float)i, (float)j, t.pos);
+				float alpha = std::get<0>(Barycentric);
+				float beta = std::get<1>(Barycentric);
+				float gamma = std::get<2>(Barycentric);
+				float w_reciprocal = 1.0f / (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
+				float z_interpolated = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
+				z_interpolated *= w_reciprocal;
 
-			// if current pixel should be painted, draw it using the color of the triangle t
-			if (z_interpolated < z_buff[get_index(i, j)]) {
-				Mymath::Vector3i current_pixel = { i, j, 0 };
-				set_pixel(current_pixel, t.getColor());
+				// if current pixel should be painted, draw it using the color of the triangle t
+				if (z_interpolated < z_buff[get_index(i, j)]) {
+					Mymath::Vector3i current_pixel = { i, j, 0 };
+					set_frame(current_pixel, t.getColor());
+				}
 			}
 		}
 	}
+	for (int j = 0; j < width; ++j)
+		for (int i = 0; i < height; ++i)
+		{
+			int index = j * 700 + i;
+			buff[index * 3] = frame_buff[index][0];
+			buff[index * 3 + 1] = frame_buff[index][1];
+			buff[index * 3 + 2] = frame_buff[index][2];
+		}
 }

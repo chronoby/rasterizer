@@ -8,7 +8,7 @@ void triangle::setVertex(int index, Mymath::Vector3f ver) { pos[index] = ver; }
 
 void triangle::setNormal(int index, Mymath::Vector3f n) { normal[index] = n; }
 
-void triangle::setColor(int index, float r, float g, float b)
+void triangle::setColor(int index, unsigned char r, unsigned char g, unsigned char b)
 {
     if ((r < 0.0) || (r > 255.) || (g < 0.0) || (g > 255.) || (b < 0.0) ||
         (b > 255.)) 
@@ -16,13 +16,18 @@ void triangle::setColor(int index, float r, float g, float b)
         throw std::runtime_error("Invalid color values");
     }
 
-    color[index] = Mymath::Vector3f((float)r / 255., (float)g / 255., (float)b / 255.);
-    return;
+    color[index] = Mymath::Vector3c(r, g, b);
 }
 
 std::vector<Mymath::Vector4f> triangle::toVector4() const
 {
     std::vector<Mymath::Vector4f> res;
-    std::transform(std::begin(pos), std::end(pos), res.begin(), [](auto& vec) {return Mymath::Vector4f(vec.x(), vec.y(), vec.z(), 1.0f); });
+    Mymath::Vector3f vec;
+    for (int i = 0; i < 3; ++i)
+    {
+        vec = pos[i];
+        res.push_back(Mymath::Vector4f(vec.x(), vec.y(), vec.z(), 1.0f));
+    }
+    //std::transform(pos.begin(), pos.end(), res.begin(), [](auto& vec) {return Mymath::Vector4f(vec.x(), vec.y(), vec.z(), 1.0f); });
     return res;
 }

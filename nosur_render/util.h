@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstdlib>
 
-constexpr float MY_PI = 3.1415926;
+constexpr float MY_PI = 3.1415926f;
 
 namespace Mymath 
 {
@@ -33,12 +33,28 @@ namespace Mymath
 		Vector3f& operator=(Vector3f temp);
 		float& operator[](std::size_t n) { return val[n]; }
 		const float& operator[](std::size_t n) const { return val[n]; }
-		const Vector3f& operator*(const float temp) const;
+		const Vector3f operator*(const float temp) const;
 		inline float x() const { return val[0]; }
 		inline float y() const { return val[1]; }
 		inline float z() const { return val[2]; }
 	private:
 		std::vector<float> val;
+	};
+
+	class Vector3c
+	{
+	public:
+		Vector3c() :val(3, 0) { }
+		Vector3c(unsigned char a, unsigned char b, unsigned char c) { val.resize(3); val[0] = a; val[1] = b; val[2] = c; }
+
+		Vector3c& operator=(Vector3c temp);
+		unsigned char& operator[](std::size_t n) { return val[n]; }
+		const unsigned char& operator[](std::size_t n) const { return val[n]; }
+		inline unsigned char x() const { return val[0]; }
+		inline unsigned char y() const { return val[1]; }
+		inline unsigned char z() const { return val[2]; }
+	private:
+		std::vector<unsigned char> val;
 	};
 
 	class Vector4f
