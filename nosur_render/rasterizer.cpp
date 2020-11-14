@@ -88,9 +88,10 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
 		}
 		for (int i = 0; i < 3; ++i)
 		{
-			t.setVertex(i, v[i].head3());
-			t.setVertex(i, v[i].head3());
-			t.setVertex(i, v[i].head3());
+			Mymath::Vector3f vert3(v[i].x(), v[i].y(), v[i].z());
+			t.setVertex(i, vert3);
+			t.setVertex(i, vert3);
+			t.setVertex(i, vert3);
 		}
 
 		auto col_x = col[i[0]];

@@ -144,7 +144,6 @@
     <ClCompile Include="RWindow.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="triangle.cpp" />
-    <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rasterizer.h" />

@@ -24,9 +24,6 @@
     <ClCompile Include="triangle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="util.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="rasterizer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

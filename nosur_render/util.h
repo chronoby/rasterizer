@@ -7,87 +7,143 @@ constexpr float MY_PI = 3.1415926f;
 
 namespace Mymath 
 {
-	class Vector3i
+	template <class T, int size>
+	class Vector
 	{
 	public:
-		Vector3i() :val(3, 0) { }
-		Vector3i(int a, int b, int c) { val.resize(3); val[0] = a; val[1] = b; val[2] = c; }
-		Vector3i& operator=(Vector3i temp);
-		int& operator[](std::size_t n) { return val[n]; }
-		const int& operator[](std::size_t n) const { return val[n]; }
+		Vector() : val(size) { }
+		Vector(T v1, T v2);
+		Vector(T v1, T v2, T v3);
+		Vector(T v1, T v2, T v3, T v4);
+		Vector(T v[]);
 
-		inline int x() const { return val[0]; }
-		inline int y() const { return val[1]; }
-		inline int z() const { return val[2]; }
+		Vector& operator=(Vector temp);
+		T& operator[](std::size_t n) { return val[n]; }
+		const T& operator[](std::size_t n) const { return val[n]; }
+		const Vector operator/(const T temp);
+
+		inline T x() const { return val[0]; }
+		inline T y() const { return val[1]; }
+		inline T z() const { return size >= 3 ? val[2] : 0; }
+		inline T w() const { return size >= 4 ? val[3] : 0; }
 
 	private:
-		std::vector<int> val;
+		std::vector<T> val;
 	};
 
-	class Vector3f
+	template <class T, int size>
+	class Matrix
 	{
 	public:
-		Vector3f() :val(3, 0.0f) { }
-		Vector3f(float a, float b, float c) { val.resize(3); val[0] = a; val[1] = b; val[2] = c; }
+		Matrix() : val(size* size) {  }
+		Matrix(T v[]);
+		std::vector<T> operator[](std::size_t n);
+		const std::vector<T> operator[](std::size_t n) const;
 
-		Vector3f& operator=(Vector3f temp);
-		float& operator[](std::size_t n) { return val[n]; }
-		const float& operator[](std::size_t n) const { return val[n]; }
-		const Vector3f operator*(const float temp) const;
-		inline float x() const { return val[0]; }
-		inline float y() const { return val[1]; }
-		inline float z() const { return val[2]; }
+		friend Matrix operator*(const Matrix& lhs, const Matrix& rhs)
+		{
+			Matrix<T, size> res;
+			for (int i = 0; i < size; ++i)
+				for (int j = 0; j < size; ++j)
+					for (int k = 0; k < size; ++k)
+						res.val[i * size + j] += lhs.val[i * size + k] * rhs.val[k * size + j];
+			return res;
+		}
+		Vector<T, size> operator*(const Vector<T, size>& rhs);
+
 	private:
 		std::vector<float> val;
 	};
 
-	class Vector3c
+	using Vector3f = Vector<float, 3>;
+	using Vector3i = Vector<int, 3>;
+	using Vector3c = Vector<unsigned int, 3>;
+	using Vector4f = Vector<float, 4>;
+	using Matrix4f = Matrix<float, 4>;
+
+	template <class T, int size>
+	Vector<T, size>::Vector(T v[])
 	{
-	public:
-		Vector3c() :val(3, 0) { }
-		Vector3c(unsigned char a, unsigned char b, unsigned char c) { val.resize(3); val[0] = a; val[1] = b; val[2] = c; }
-
-		Vector3c& operator=(Vector3c temp);
-		unsigned char& operator[](std::size_t n) { return val[n]; }
-		const unsigned char& operator[](std::size_t n) const { return val[n]; }
-		inline unsigned char x() const { return val[0]; }
-		inline unsigned char y() const { return val[1]; }
-		inline unsigned char z() const { return val[2]; }
-	private:
-		std::vector<unsigned char> val;
-	};
-
-	class Vector4f
+		val.resize(size);
+		for (int i = 0; i < size; ++i)
+			val[i] = v[i];
+	}
+	template <class T, int size>
+	Vector<T, size>::Vector(T v1, T v2)
 	{
-	public:
-		Vector4f() :val(4, 0.0f) { }
-		Vector4f(float a, float b, float c, float d) { val.resize(4); val[0] = a; val[1] = b; val[2] = c; val[3] = d; }
+		val.push_back(v1);
+		val.push_back(v2);
+	}
 
-		float& operator[](std::size_t n) { return val[n]; }
-		const float& operator[](std::size_t n) const { return val[n]; }
-		Vector4f& operator=(Vector4f temp);
-		const Vector4f operator/(const float temp);
-		Vector3f head3() { return Vector3f(val[0], val[1], val[2]); }
+	template <class T, int size>
+	Vector<T, size>::Vector(T v1, T v2, T v3)
+	{
+		val.push_back(v1);
+		val.push_back(v2);
+		val.push_back(v3);
+	}
 
-		inline float x() const { return val[0]; }
-		inline float y() const { return val[1]; }
-		inline float z() const { return val[2]; }
-		inline float w() const { return val[3]; }
+	template <class T, int size>
+	Vector<T, size>::Vector(T v1, T v2, T v3, T v4)
+	{
+		val.push_back(v1);
+		val.push_back(v2);
+		val.push_back(v3);
+		val.push_back(v4);
+	}
+
+	template <class T, int size>
+	Vector<T, size>& Vector<T, size>::operator=(Vector<T, size> temp)
+	{
+		val = temp.val;
+		return *this;
+	}
+
+	template <class T, int size>
+	const Vector<T, size> Vector<T, size>::operator/(const T temp)
+	{
+		T v[size];
+		for (int i = 0; i < size; ++i)
+			v[i] = val[i] / temp;
+		Vector<T, size> res(v);
+		return res;
+	}
+
+	template <class T, int size>
+	Matrix<T, size>::Matrix(T v[])
+	{
+		for (int i = 0; i < size * size; ++i)
+			val.push_back(v[i]);
+	}
+
+	template <class T, int size>
+	std::vector<T> Matrix<T, size>::operator[](std::size_t n)
+	{
+		std::vector<float> res;
+		for (int i = 0; i < size; ++i)
+			res.push_back(val[n * size + i]);
+		return res;
+	}
+
+	template <class T, int size>
+	const std::vector<T> Matrix<T, size>::operator[](std::size_t n) const
+	{
+		std::vector<float> res;
+		for (int i = 0; i < size; ++i)
+			res.push_back(val[n * size + i]);
+		return res;
+	}
+
+	template <class T, int size>
+	Vector<T, size> Matrix<T, size>::operator*(const Vector<T, size>& rhs)
+	{
+		Vector<T, size> res;
+		for (int i = 0; i < size; ++i)
+			for (int j = 0; j < size; ++j)
+				res[i] += val[i * size + j] * rhs[j];
+		return res;
+	}
 		
-	private:
-		std::vector<float> val;
-	};
-
-	class Matrix4f
-	{
-	public:
-		Matrix4f(): val(16, 0.0f) { }
-		Matrix4f(float v[]);
-		std::vector<float> operator[](std::size_t n);
-		const std::vector<float> operator[](std::size_t n) const;
-		friend Matrix4f operator*(const Matrix4f& lhs, const Matrix4f& rhs);
-		Vector4f operator*(const Vector4f& rhs);
-	private:
-		std::vector<float> val;
-	};
 }
+
+
