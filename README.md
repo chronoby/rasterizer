@@ -26,7 +26,7 @@ It runs on Windows and build with Visual Studio 2019
 
 - Blinn-phong shading
 
-<img src="https://github.com/chronoby/nosur_render/blob/master/output/phone.png" width="700"  alt="Blinn-phong shading"/><br/>
+<img src="https://github.com/chronoby/nosur_render/blob/master/output/phong.png" width="700"  alt="Blinn-phong shading"/><br/>
 
 - Blinn-phong shading with texture
 
