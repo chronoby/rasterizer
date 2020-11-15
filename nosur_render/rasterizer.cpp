@@ -1,6 +1,8 @@
 #include <tuple>
 #include <cmath>
+#include <array>
 #include <algorithm>
+#include <iostream>
 
 #include "rasterizer.h"
 
@@ -24,7 +26,7 @@ rst::ind_buf_id rst::rasterizer::load_indices(const std::vector<Mymath::Vector3i
 	return { id };
 }
 
-rst::col_buf_id rst::rasterizer::load_colors(const std::vector<Mymath::Vector3c>& colors)
+rst::col_buf_id rst::rasterizer::load_colors(const std::vector<Mymath::Vector3f>& colors)
 {
 	auto id = get_next_id();
 	col_buf.emplace(id, colors);
@@ -36,12 +38,12 @@ Mymath::Vector4f to_vec4(const Mymath::Vector3f& v3, float w = 1.0f)
 	return Mymath::Vector4f(v3[0], v3[1], v3[2], w);
 }
 
-float side(int ptx, int pty, Mymath::Vector3f p1, Mymath::Vector3f p2)
+float side(int ptx, int pty, Mymath::Vector4f p1, Mymath::Vector4f p2)
 {
 	return (p2.x() - p1.x()) * ((float)pty - p1.y()) - (p2.y() - p1.y()) * ((float)ptx - p1.x());
 }
 
-static bool insideTriangle(int x, int y, const Mymath::Vector3f* _v)
+static bool insideTriangle(int x, int y, const Mymath::Vector4f* _v)
 {
 	float side1 = side(x, y, _v[0], _v[1]);
 	float side2 = side(x, y, _v[1], _v[2]);
@@ -49,7 +51,7 @@ static bool insideTriangle(int x, int y, const Mymath::Vector3f* _v)
 	return ((side1 < 0) && (side2 < 0) && (side3 < 0)) || ((side1 > 0) && (side2 > 0) && (side3 > 0));
 }
 
-static std::tuple<float, float, float> computeBarycentric2D(float x, float y, const Mymath::Vector3f* v)
+static std::tuple<float, float, float> computeBarycentric2D(float x, float y, const Mymath::Vector4f* v)
 {
 	float c1 = (x * (v[1].y() - v[2].y()) + (v[2].x() - v[1].x()) * y + v[1].x() * v[2].y() - v[2].x() * v[1].y()) / (v[0].x() * (v[1].y() - v[2].y()) + (v[2].x() - v[1].x()) * v[0].y() + v[1].x() * v[2].y() - v[2].x() * v[1].y());
 	float c2 = (x * (v[2].y() - v[0].y()) + (v[0].x() - v[2].x()) * y + v[2].x() * v[0].y() - v[0].x() * v[2].y()) / (v[1].x() * (v[2].y() - v[0].y()) + (v[0].x() - v[2].x()) * v[1].y() + v[2].x() * v[0].y() - v[0].x() * v[2].y());
@@ -57,28 +59,48 @@ static std::tuple<float, float, float> computeBarycentric2D(float x, float y, co
 	return std::tuple<float, float, float>{ c1, c2, c3 };
 }
 
-void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf_id col_buffer, Primitive type)
+void rst::rasterizer::draw(std::vector<triangle*>& triangle_list)
 {
-	std::vector<Mymath::Vector3f>& buf = pos_buf[pos_buffer.pos_id];
-	std::vector<Mymath::Vector3i>& ind = ind_buf[ind_buffer.ind_id];
-	std::vector<Mymath::Vector3c>& col = col_buf[col_buffer.col_id];
-	
 	float f1 = (50.f - 0.1f) / 2.0f;
 	float f2 = (50.f + 0.1f) / 2.0f;
 
 	Mymath::Matrix4f mvp = projection * view * model;
-	for (auto& i : ind)
+	int count = 1;
+	for (const auto& t: triangle_list)
 	{
-		triangle t;
+		triangle newtri = *t;
+		std::array<Mymath::Vector4f, 3> mm
+		{
+			(view * model * t->pos[0]),
+			(view * model * t->pos[1]),
+			(view * model * t->pos[2])
+		};
+
+		std::array<Mymath::Vector3f, 3> viewspace_pos
+		{
+			(Mymath::Vector3f(mm[0].x(), mm[0].y(), mm[0].z())),
+			(Mymath::Vector3f(mm[1].x(), mm[1].y(), mm[1].z())),
+			(Mymath::Vector3f(mm[2].x(), mm[2].y(), mm[2].z()))
+		};
+
 		Mymath::Vector4f v[] =
 		{
-			mvp * to_vec4(buf[i[0]], 1.0f),
-			mvp * to_vec4(buf[i[1]], 1.0f),
-			mvp * to_vec4(buf[i[2]], 1.0f)
+			mvp * t->pos[0],
+			mvp * t->pos[1],
+			mvp * t->pos[2]
 		};
 		// Homogeneous division
 		for (auto& vec : v)
 			vec = vec / vec.w();
+
+		Mymath::Matrix4f inv_trans = (view * model).inverse().transpose();
+		Mymath::Vector4f n[] =
+		{
+			inv_trans * to_vec4(t->normal[0], 0.0f),
+			inv_trans * to_vec4(t->normal[1], 0.0f),
+			inv_trans * to_vec4(t->normal[2], 0.0f)
+		};
+
 		// Viewport transformation
 		for (auto& vert : v)
 		{
@@ -86,27 +108,34 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
 			vert[1] = 0.5f * height * (vert[1] + 1.0);
 			vert[2] = vert[2] * f1 + f2;
 		}
+
 		for (int i = 0; i < 3; ++i)
 		{
+<<<<<<< HEAD
+			newtri.setVertex(i, v[i]);
+=======
 			Mymath::Vector3f vert3(v[i].x(), v[i].y(), v[i].z());
 			t.setVertex(i, vert3);
 			t.setVertex(i, vert3);
 			t.setVertex(i, vert3);
+>>>>>>> a1dc0bb00f406bc20f2b3af3b7f97b20bf5f37d4
 		}
 
-		auto col_x = col[i[0]];
-		auto col_y = col[i[1]];
-		auto col_z = col[i[2]];
+		for (int i = 0; i < 3; ++i)
+		{
+			newtri.setNormal(i, Mymath::Vector3f(n[i].x(), n[i].y(), n[i].z()));
+		}
 
-		t.setColor(0, col_x[0], col_x[1], col_x[2]);
-		t.setColor(1, col_y[0], col_y[1], col_y[2]);
-		t.setColor(2, col_z[0], col_z[1], col_z[2]);
-
-		rasterize_triangle(t);
+		newtri.setColor(0, 148, 121, 92);
+		newtri.setColor(1, 148, 121, 92);
+		newtri.setColor(2, 148, 121, 92);
+		
+		rasterize_triangle(newtri, viewspace_pos);
+		std::cout << "Triangle " << count++ << " / " << triangle_list.size() << " rendered." << std::endl;
 	}
 }
 
-void rst::rasterizer::set_frame(const Mymath::Vector3i& point, const Mymath::Vector3c& color)
+void rst::rasterizer::set_frame(const Mymath::Vector3i& point, const Mymath::Vector3f& color)
 {
 	int index = get_index(point.x(), point.y());
 	frame_buff[index] = color;
@@ -114,14 +143,14 @@ void rst::rasterizer::set_frame(const Mymath::Vector3i& point, const Mymath::Vec
 
 void rst::rasterizer::clear()
 {
-	std::fill(frame_buff.begin(), frame_buff.end(), Mymath::Vector3c{ 0, 0, 0 });
+	std::fill(frame_buff.begin(), frame_buff.end(), Mymath::Vector3f{ 0, 0, 0 });
 
 	std::fill(z_buff.begin(), z_buff.end(), std::numeric_limits<float>::infinity());
 }
 
-void rst::rasterizer::rasterize_triangle(const triangle& t)
+void rst::rasterizer::rasterize_triangle(const triangle& t, const std::array<Mymath::Vector3f, 3>& world_pos)
 {
-	std::vector<Mymath::Vector4f> v = t.toVector4();
+	auto v = t.toVector4();
 
 	int bounding_l = (int)floor(std::min(t.pos[0].x(), std::min(t.pos[1].x(), t.pos[2].x())));
 	int bounding_r = (int)ceil(std::max(t.pos[0].x(), std::max(t.pos[1].x(), t.pos[2].x())));
@@ -143,19 +172,33 @@ void rst::rasterizer::rasterize_triangle(const triangle& t)
 				z_interpolated *= w_reciprocal;
 
 				// if current pixel should be painted, draw it using the color of the triangle t
-				if (z_interpolated < z_buff[get_index(i, j)]) {
+				if (z_interpolated < z_buff[get_index(i, j)]) 
+				{
+					z_buff[get_index(i, j)] = z_interpolated;
+
+					auto interpolated_color = alpha * t.color[0] + beta * t.color[1] + gamma * t.color[2];
+					auto interpolated_normal = alpha * t.normal[0] + beta * t.normal[1] + gamma * t.normal[2];
+					auto interpolated_texcoords = alpha * t.tex_coords[0] + beta * t.tex_coords[1] + gamma * t.tex_coords[2];
+					auto interpolated_shadingcoords = alpha * world_pos[0] + beta * world_pos[1] + gamma * world_pos[2];
+					fragment_shader_payload payload(interpolated_color, interpolated_normal.normalized(),
+						interpolated_texcoords, tex ? &*tex : nullptr);
+					payload.view_pos = interpolated_shadingcoords;
+					auto pixel_color = fragment_shader(payload);
+
 					Mymath::Vector3i current_pixel = { i, j, 0 };
-					set_frame(current_pixel, t.getColor());
+					set_frame(current_pixel, pixel_color);
 				}
 			}
 		}
 	}
-	for (int j = 0; j < width; ++j)
-		for (int i = 0; i < height; ++i)
+
+	for (int i = 0; i < height; ++i)
+		for (int j = 0; j < width; ++j)
 		{
-			int index = j * 700 + i;
-			buff[index * 3] = frame_buff[index][0];
-			buff[index * 3 + 1] = frame_buff[index][1];
-			buff[index * 3 + 2] = frame_buff[index][2];
+			int index_frame = i * width + j;
+			int index_buff = (height - i - 1) * width + j;
+			buff[index_buff * 3    ] = static_cast<unsigned int>(frame_buff[index_frame][0]);
+			buff[index_buff * 3 + 1] = static_cast<unsigned int>(frame_buff[index_frame][1]);
+			buff[index_buff * 3 + 2] = static_cast<unsigned int>(frame_buff[index_frame][2]);
 		}
 }

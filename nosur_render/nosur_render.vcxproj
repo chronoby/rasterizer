@@ -87,6 +87,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,18 +140,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="rasterizer.cpp" />
     <ClCompile Include="RWindow.cpp" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="texture.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="rasterizer.h" />
     <ClInclude Include="RWindow.h" />
+    <ClInclude Include="shader.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="util.h" />
-    <ClInclude Include="pipeline.h" />
     <ClInclude Include="triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

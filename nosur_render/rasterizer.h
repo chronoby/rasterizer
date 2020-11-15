@@ -2,8 +2,12 @@
 
 #include <vector>
 #include <map>
+#include <optional>
 #include <algorithm>
+#include <functional>
+
 #include "triangle.h"
+#include "shader.h"
 
 namespace rst 
 {
@@ -37,20 +41,31 @@ namespace rst
 
 		pos_buf_id load_positions(const std::vector<Mymath::Vector3f>& positions);
 		ind_buf_id load_indices(const std::vector<Mymath::Vector3i>& indices);
-		col_buf_id load_colors(const std::vector<Mymath::Vector3c>& colors);
+		col_buf_id load_colors(const std::vector<Mymath::Vector3f>& colors);
 
 		inline void set_model(const Mymath::Matrix4f& m) { model = m; }
 		inline void set_view(const Mymath::Matrix4f& v) { view = v; }
 		inline void set_projection(const Mymath::Matrix4f& p) { projection = p; }
 
-		void set_frame(const Mymath::Vector3i& point, const Mymath::Vector3c& color);
+		inline void set_texture(texture t) { tex = t; }
+		inline void set_vertex_shader(std::function<Mymath::Vector3f(vertex_shader_payload&)> vert_shader)
+		{
+			vertex_shader = vertex_shader;
+		}
+		inline void set_fragment_shader(std::function<Mymath::Vector3f(fragment_shader_payload&)> frag_shader)
+		{
+			fragment_shader = frag_shader;
+		}
+
+		void set_frame(const Mymath::Vector3i& point, const Mymath::Vector3f& color);
 		void clear();
-        void draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf_id col_buffer, Primitive type);
-		std::vector<Mymath::Vector3c>& frame_buffer() { return frame_buff; }
+		void draw(std::vector<triangle*>& triangle_list);
+
+		std::vector<Mymath::Vector3f>& frame_buffer() { return frame_buff; }
 
 		unsigned char* buff = new unsigned char[700 * 700 * 3];
 	private:
-		void rasterize_triangle(const triangle& t);
+		void rasterize_triangle(const triangle& t, const std::array<Mymath::Vector3f, 3>& world_pos);
 
 		Mymath::Matrix4f model;
 		Mymath::Matrix4f view;
@@ -58,10 +73,16 @@ namespace rst
 
 		std::map<int, std::vector<Mymath::Vector3f>> pos_buf;
 		std::map<int, std::vector<Mymath::Vector3i>> ind_buf;
-		std::map<int, std::vector<Mymath::Vector3c>> col_buf;
+		std::map<int, std::vector<Mymath::Vector3f>> col_buf;
+		std::map<int, std::vector<Mymath::Vector3f>> nor_buf;
+
+		std::optional<texture> tex;
+
+		std::function<Mymath::Vector3f(fragment_shader_payload&)> fragment_shader;
+		std::function<Mymath::Vector3f(vertex_shader_payload&)> vertex_shader;
 
 		int width, height;
-		std::vector<Mymath::Vector3c> frame_buff;
+		std::vector<Mymath::Vector3f> frame_buff;
 		std::vector<float> z_buff;
 
 		int next_id = 0;

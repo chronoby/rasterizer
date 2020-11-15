@@ -22,7 +22,7 @@ BOOL RWindow::InitApplication()
     wc.hIconSm = NULL;
 
     if (!RegisterClassEx(&wc)) exit(0);
-    return TRUE;
+        return TRUE;
 }
 
 BOOL RWindow::InitInstance()
@@ -49,7 +49,6 @@ LRESULT CALLBACK RWindow::__WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 {
     PAINTSTRUCT ps;
     HDC hdc;
-    std::vector<Mymath::Vector3c> frame;
 
     BITMAPINFO info;
     ZeroMemory(&info, sizeof(BITMAPINFO));
@@ -72,13 +71,7 @@ LRESULT CALLBACK RWindow::__WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
-//        for(int j = 0; j < 700; ++j)
-//            for (int i = 0; i < 700; ++i)
-//            {
-//                int index = j * 700 + i;
-//                SetPixel(hdc, i, j, RGB(frame[index][0], frame[index][1], frame[index][2]));
-//            }
-        frame = r.frame_buffer();
+
         SetDIBitsToDevice(hdc, 0, 0, w, h, 0, 0, 0, h, buff, &info, DIB_RGB_COLORS);
         EndPaint(hWnd, &ps);
         break;
