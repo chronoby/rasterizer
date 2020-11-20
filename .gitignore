@@ -363,4 +363,5 @@ FodyWeavers.xsd
 
 # Outside lib
 stb_image.h
+stb_image_write.h
 OBJ_Loader.h

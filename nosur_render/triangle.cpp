@@ -16,7 +16,7 @@ void triangle::setColor(int index, float r, float g, float b)
         throw std::runtime_error("Invalid color values");
     }
 
-    color[index] = Mymath::Vector3f(r, g, b);
+    color[index] = Mymath::Vector3f(r / 255.0, g / 255.0, b / 255.0);
 }
 
 void triangle::setTexCoord(int ind, Mymath::Vector2f uv)

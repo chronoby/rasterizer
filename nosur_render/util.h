@@ -21,7 +21,6 @@ namespace Mymath
 		Vector& operator=(Vector temp);
 		T& operator[](std::size_t n) { return val[n]; }
 		const T& operator[](std::size_t n) const { return val[n]; }
-<<<<<<< HEAD
 		Vector operator+(const Vector temp);
 		Vector operator-(const Vector temp);
 		Vector operator/(const T temp);
@@ -42,9 +41,6 @@ namespace Mymath
 		T dot(Vector& rhs);
 
 		Vector cwiseProduct(Vector rhs);
-=======
-		const Vector operator/(const T temp);
->>>>>>> a1dc0bb00f406bc20f2b3af3b7f97b20bf5f37d4
 
 		inline T x() const { return val[0]; }
 		inline T y() const { return val[1]; }
@@ -74,11 +70,8 @@ namespace Mymath
 			return res;
 		}
 		Vector<T, size> operator*(const Vector<T, size>& rhs);
-<<<<<<< HEAD
 		Matrix<T, size> transpose();
 		Matrix inverse();
-=======
->>>>>>> a1dc0bb00f406bc20f2b3af3b7f97b20bf5f37d4
 
 	private:
 		std::vector<float> val;
@@ -92,10 +85,7 @@ namespace Mymath
 	using Vector3i = Vector<int, 3>;
 	using Vector3c = Vector<unsigned int, 3>;
 	using Vector4f = Vector<float, 4>;
-<<<<<<< HEAD
 	using Vector2f = Vector<float, 2>;
-=======
->>>>>>> a1dc0bb00f406bc20f2b3af3b7f97b20bf5f37d4
 	using Matrix4f = Matrix<float, 4>;
 
 	template <class T, int size>
@@ -137,7 +127,6 @@ namespace Mymath
 	}
 
 	template <class T, int size>
-<<<<<<< HEAD
 	Vector<T, size> Vector<T, size>::operator+(const Vector<T, size> temp)
 	{
 		T v[size];
@@ -159,9 +148,6 @@ namespace Mymath
 
 	template <class T, int size>
 	Vector<T, size> Vector<T, size>::operator/(const T temp)
-=======
-	const Vector<T, size> Vector<T, size>::operator/(const T temp)
->>>>>>> a1dc0bb00f406bc20f2b3af3b7f97b20bf5f37d4
 	{
 		T v[size];
 		for (int i = 0; i < size; ++i)
@@ -171,7 +157,6 @@ namespace Mymath
 	}
 
 	template <class T, int size>
-<<<<<<< HEAD
 	Vector<T, size> operator/(const Vector<T, size> lhs, const T temp)
 	{
 		return lhs * (1 / temp);
@@ -212,8 +197,7 @@ namespace Mymath
 	}
 
 	template <class T, int size>
-=======
->>>>>>> a1dc0bb00f406bc20f2b3af3b7f97b20bf5f37d4
+
 	Matrix<T, size>::Matrix(T v[])
 	{
 		for (int i = 0; i < size * size; ++i)
@@ -247,7 +231,6 @@ namespace Mymath
 				res[i] += val[i * size + j] * rhs[j];
 		return res;
 	}
-<<<<<<< HEAD
 
 	template <class T, int size>
 	Matrix<T, size> Matrix<T, size>::transpose()
@@ -350,9 +333,3 @@ namespace Mymath
 		return D;
 	}
 }
-=======
-		
-}
-
-
->>>>>>> a1dc0bb00f406bc20f2b3af3b7f97b20bf5f37d4

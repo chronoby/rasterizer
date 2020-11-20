@@ -9,11 +9,8 @@ Mymath::Vector3f vertex_shader(vertex_shader_payload& payload)
 
 Mymath::Vector3f normal_fragment_shader(const fragment_shader_payload& payload)
 {
-	Mymath::Vector3f return_color = (payload.normal.normalized() + Mymath::Vector3f(1.0f, 1.0f, 1.0f)) / 2.0f;
-	Mymath::Vector3f result(static_cast<unsigned char>(return_color.x() * 255.0), 
-		static_cast<unsigned char>(return_color.y() * 255.0), 
-		static_cast<unsigned char>(return_color.z() * 255.0));
-	return result;
+	Mymath::Vector3f result_color = (payload.normal.normalized() + Mymath::Vector3f(1.0f, 1.0f, 1.0f)) / 2.0f;
+	return result_color * 255.0f;
 }
 
 Mymath::Vector3f reflect(Mymath::Vector3f& vec, Mymath::Vector3f& axis)
@@ -22,11 +19,10 @@ Mymath::Vector3f reflect(Mymath::Vector3f& vec, Mymath::Vector3f& axis)
 	return (axis * (costheta * 2) - vec).normalized();
 }
 
-Mymath::Vector3f phone_fragment_shader(const fragment_shader_payload& payload)
+Mymath::Vector3f phong_fragment_shader(const fragment_shader_payload& payload)
 {
     Mymath::Vector3f ka = Mymath::Vector3f(0.005, 0.005, 0.005);
-    Mymath::Vector3f kd = Mymath::Vector3f(static_cast<float>(payload.color.x()), 
-        static_cast<float>(payload.color.y()), static_cast<float>(payload.color.z()));
+    Mymath::Vector3f kd = payload.color;
     Mymath::Vector3f ks = Mymath::Vector3f(0.7937, 0.7937, 0.7937);
 
     auto l1 = light{ {20, 20, 20}, {500, 500, 500} };
@@ -38,8 +34,7 @@ Mymath::Vector3f phone_fragment_shader(const fragment_shader_payload& payload)
 
     float p = 150;
 
-    Mymath::Vector3f color = Mymath::Vector3f(static_cast<float>(payload.color.x()),
-        static_cast<float>(payload.color.y()), static_cast<float>(payload.color.z()));
+    Mymath::Vector3f color = payload.color;
     Mymath::Vector3f point = payload.view_pos;
     Mymath::Vector3f normal = payload.normal;
 
@@ -79,12 +74,9 @@ Mymath::Vector3f texture_fragment_shader(const fragment_shader_payload& payload)
     Mymath::Vector3f return_color = { 0, 0, 0 };
     if (payload.text)
     {
-        // TODO: Get the texture value at the texture coordinates of the current fragment
-        r_color = (*payload.text).getColor(payload.tex_coords.x(), payload.tex_coords.y());
-        return_color = Mymath::Vector3f(static_cast<float>(r_color.x()), 
-            static_cast<float>(r_color.y()), static_cast<float>(r_color.z()));
+        return_color = (*payload.text).getColor(payload.tex_coords.x(), payload.tex_coords.y());
     }
-    Mymath::Vector3f texture_color(return_color.x(), return_color.y(), return_color.z());
+    Mymath::Vector3f texture_color(return_color);
 
     Mymath::Vector3f ka = Mymath::Vector3f(0.005, 0.005, 0.005);
     Mymath::Vector3f kd = texture_color / 255.f;

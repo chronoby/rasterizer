@@ -91,7 +91,11 @@ void rst::rasterizer::draw(std::vector<triangle*>& triangle_list)
 		};
 		// Homogeneous division
 		for (auto& vec : v)
-			vec = vec / vec.w();
+		{
+			vec[0] = vec[0] / vec.w();
+			vec[1] = vec[1] / vec.w();
+			vec[2] = vec[2] / vec.w();
+		}
 
 		Mymath::Matrix4f inv_trans = (view * model).inverse().transpose();
 		Mymath::Vector4f n[] =
@@ -111,14 +115,7 @@ void rst::rasterizer::draw(std::vector<triangle*>& triangle_list)
 
 		for (int i = 0; i < 3; ++i)
 		{
-<<<<<<< HEAD
 			newtri.setVertex(i, v[i]);
-=======
-			Mymath::Vector3f vert3(v[i].x(), v[i].y(), v[i].z());
-			t.setVertex(i, vert3);
-			t.setVertex(i, vert3);
-			t.setVertex(i, vert3);
->>>>>>> a1dc0bb00f406bc20f2b3af3b7f97b20bf5f37d4
 		}
 
 		for (int i = 0; i < 3; ++i)
@@ -126,9 +123,9 @@ void rst::rasterizer::draw(std::vector<triangle*>& triangle_list)
 			newtri.setNormal(i, Mymath::Vector3f(n[i].x(), n[i].y(), n[i].z()));
 		}
 
-		newtri.setColor(0, 148, 121, 92);
-		newtri.setColor(1, 148, 121, 92);
-		newtri.setColor(2, 148, 121, 92);
+		newtri.setColor(0, 148., 121., 92.);
+		newtri.setColor(1, 148., 121., 92.);
+		newtri.setColor(2, 148., 121., 92.);
 		
 		rasterize_triangle(newtri, viewspace_pos);
 		std::cout << "Triangle " << count++ << " / " << triangle_list.size() << " rendered." << std::endl;
@@ -138,6 +135,7 @@ void rst::rasterizer::draw(std::vector<triangle*>& triangle_list)
 void rst::rasterizer::set_frame(const Mymath::Vector3i& point, const Mymath::Vector3f& color)
 {
 	int index = get_index(point.x(), point.y());
+	
 	frame_buff[index] = color;
 }
 
@@ -196,9 +194,16 @@ void rst::rasterizer::rasterize_triangle(const triangle& t, const std::array<Mym
 		for (int j = 0; j < width; ++j)
 		{
 			int index_frame = i * width + j;
-			int index_buff = (height - i - 1) * width + j;
-			buff[index_buff * 3    ] = static_cast<unsigned int>(frame_buff[index_frame][0]);
-			buff[index_buff * 3 + 1] = static_cast<unsigned int>(frame_buff[index_frame][1]);
-			buff[index_buff * 3 + 2] = static_cast<unsigned int>(frame_buff[index_frame][2]);
+			int index_buff = ((height - i - 1) * width + j) * 3;
+			int index_image = index_frame * 3;
+			auto r = static_cast<unsigned int>(frame_buff[index_frame][0]);
+			auto g = static_cast<unsigned int>(frame_buff[index_frame][1]);
+			auto b = static_cast<unsigned int>(frame_buff[index_frame][2]);
+			buff[index_buff    ] = r > 255 ? 255 : r;
+			buff[index_buff + 1] = g > 255 ? 255 : g;
+			buff[index_buff + 2] = b > 255 ? 255 : b;
+			image_write_data[index_image    ] = buff[index_buff    ];
+			image_write_data[index_image + 1] = buff[index_buff + 1];
+			image_write_data[index_image + 2] = buff[index_buff + 2];
 		}
 }

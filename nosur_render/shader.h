@@ -37,7 +37,7 @@ Mymath::Vector3f normal_fragment_shader(const fragment_shader_payload& payload);
 
 Mymath::Vector3f reflect(const Mymath::Vector3f& vec, const Mymath::Vector3f& axis);
 
-Mymath::Vector3f phone_fragment_shader(const fragment_shader_payload& payload);
+Mymath::Vector3f phong_fragment_shader(const fragment_shader_payload& payload);
 
 Mymath::Vector3f texture_fragment_shader(const fragment_shader_payload& payload);
 

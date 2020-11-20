@@ -9,7 +9,7 @@ public:
 	texture() = default;
 	texture(const std::string& path);
 
-	Mymath::Vector3f getColor(int u, int v);
+	Mymath::Vector3f getColor(float u, float v);
 
 private:
 	unsigned char* image_data;

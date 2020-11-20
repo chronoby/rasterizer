@@ -50,7 +50,7 @@ namespace rst
 		inline void set_texture(texture t) { tex = t; }
 		inline void set_vertex_shader(std::function<Mymath::Vector3f(vertex_shader_payload&)> vert_shader)
 		{
-			vertex_shader = vertex_shader;
+			vertex_shader = vert_shader;
 		}
 		inline void set_fragment_shader(std::function<Mymath::Vector3f(fragment_shader_payload&)> frag_shader)
 		{
@@ -64,6 +64,7 @@ namespace rst
 		std::vector<Mymath::Vector3f>& frame_buffer() { return frame_buff; }
 
 		unsigned char* buff = new unsigned char[700 * 700 * 3];
+		unsigned char* image_write_data = new unsigned char[700 * 700 * 3];
 	private:
 		void rasterize_triangle(const triangle& t, const std::array<Mymath::Vector3f, 3>& world_pos);
 

@@ -65,5 +65,8 @@
     <ClInclude Include="OBJ_Loader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image_write.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
