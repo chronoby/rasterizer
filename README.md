@@ -22,20 +22,6 @@ It runs on Windows and build with Visual Studio 2019
   - Blinn-phong shading
   - Texture mapping
 
-## Samples
-
-- Normal shading
-
-<img src="https://github.com/chronoby/nosur_render/blob/master/output/normal.png" width="700"  alt="Normal shading"/><br/>
-
-- Blinn-phong shading
-
-<img src="https://github.com/chronoby/nosur_render/blob/master/output/phong.png" width="700"  alt="Blinn-phong shading"/><br/>
-
-- Blinn-phong shading with texture
-
-<img src="https://github.com/chronoby/nosur_render/blob/master/output/texture.png" width="700"  alt="with texture"/><br/>
-
 ## Something to be done
 
 - Clipping
