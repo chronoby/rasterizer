@@ -12,15 +12,24 @@ It runs on Windows and build with Visual Studio 2019
    
 ## Rendering pipeline
 
-- Geometry Processing
+- Vertex Processing
   - Model transform
   - View transform
   - Projection
 - Rasterization
-  - Triangle traversal
-  - Pixel processing
+- Fragment Processing
   - Blinn-phong shading
   - Texture mapping
+
+## Result
+
+- Blinn-Phong shading
+
+![avator](output/phong.png)
+
+- Texture mapping
+
+![avator](output/texture.png)
 
 ## Something to be done
 
