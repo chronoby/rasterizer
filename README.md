@@ -1,6 +1,6 @@
-# nosur_render
+# Rasterizer
 
-A soft renderer based on graphics pipeline.
+A soft rasterization renderer, implementation of basic graphics pipeline.
 
 ## Build
 
@@ -39,7 +39,3 @@ It runs on Windows and build with Visual Studio 2019
 - Anti-aliasing
 - optimizing
 - ...
-
-## Why "nosur_render"
-
-"nosur_render" means No Surrender!
